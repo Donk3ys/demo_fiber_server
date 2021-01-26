@@ -1,6 +1,7 @@
 package main
 
 import (
+	handler "fiber_demo/handlers"
 	"fmt"
 	"log"
 	"os"
@@ -8,6 +9,27 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 )
+
+
+func main() {
+	// Set environmental variables
+	host, port := getEnvs()
+
+	// TODO Add db
+
+	// Create App
+	app := fiber.New()
+
+	// Route Handler
+	gh := handler.GeneralHandler {}
+  app.Get("/", gh.SayHi)
+	app.Get("/:id", gh.GetPersonMatchingId)
+	app.Post("/", gh.PersonCreds)
+
+	// Run Server
+	log.Fatal(app.Listen(fmt.Sprintf("%s:%s", host, port)))
+}
+
 
 // Checks if envs are set in os or .env file
 func getEnvs() (string, string) {
@@ -25,21 +47,4 @@ func getEnvs() (string, string) {
 	}
 
 	return host, port
-}
-
-
-func main() {
-	// Set environmental variables
-	host, port := getEnvs()
-
-	// TODO Add db
-
-	app := fiber.New()
-
-  app.Get("/", func(c *fiber.Ctx) error {
-    return c.SendString("Hello, World!")
-  })
-
-	// Run Server
-	log.Fatal(app.Listen(fmt.Sprintf("%s:%s", host, port)))
 }
